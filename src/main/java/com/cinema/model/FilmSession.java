@@ -93,4 +93,5 @@ public class FilmSession {
     public int hashCode() {
         return Objects.hash(id);
     }
+
 }

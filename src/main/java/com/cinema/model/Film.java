@@ -4,7 +4,7 @@ import java.util.Objects;
 
 public class Film {
 
-    private  int id;
+    private int id;
 
     private String name;
 
@@ -14,7 +14,7 @@ public class Film {
 
     private int genreId;
 
-    private  int minimalAge;
+    private int minimalAge;
 
     private int durationInMinutes;
 
@@ -114,4 +114,5 @@ public class Film {
     public int hashCode() {
         return Objects.hash(id);
     }
+
 }
