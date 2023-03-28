@@ -14,9 +14,9 @@ public class Ticket {
 
     private int userId;
 
-    public Ticket(int id, int session_id, int rowNumber, int placeNumber, int userId) {
+    public Ticket(int id, int sessionId, int rowNumber, int placeNumber, int userId) {
         this.id = id;
-        this.sessionId = session_id;
+        this.sessionId = sessionId;
         this.rowNumber = rowNumber;
         this.placeNumber = placeNumber;
         this.userId = userId;

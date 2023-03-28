@@ -19,8 +19,8 @@ public class Sql2oHallRepository implements HallRepository {
     @Override
     public Hall save(Hall hall) {
         try (Connection connection = sql2o.open()) {
-            var query = connection.createQuery("INSERT INTO halls(id, name, row_count, place_count, description)" +
-                            "VALUES (:id, :name, :rowCount, :description)")
+            var query = connection.createQuery("INSERT INTO halls(id, name, row_count, place_count, description)"
+                            + "VALUES (:id, :name, :rowCount, :description)")
                     .addParameter("id", hall.getId())
                     .addParameter("name", hall.getName())
                     .addParameter("rowCount", hall.getRowCount())

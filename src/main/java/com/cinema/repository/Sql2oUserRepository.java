@@ -22,12 +22,11 @@ public class Sql2oUserRepository implements UserRepository {
     public Optional<User> save(User user) {
         try (Connection connection = sql2o.open()) {
             var sql = """
-                    INSERT INTO users(id, full_name, email, password)
-                    VALUES(:id, :fullName, :email, :password)
+                    INSERT INTO users(full_name, email, password)
+                    VALUES(:fullName, :email, :password)
                     """;
 
             var query = connection.createQuery(sql, true)
-                    .addParameter("id", user.getId())
                     .addParameter("fullName", user.getFullName())
                     .addParameter("email", user.getEmail())
                     .addParameter("password", user.getPassword());
@@ -45,7 +44,7 @@ public class Sql2oUserRepository implements UserRepository {
         try (Connection connection = sql2o.open()) {
             var query = connection.createQuery("SELECT * FROM users WHERE id = :id")
                     .addParameter("id", id);
-            User user = query.executeAndFetchFirst(User.class);
+            User user = query.setColumnMappings(User.COLUMN_MAPPING).executeAndFetchFirst(User.class);
             return Optional.ofNullable(user);
         }
     }
@@ -55,7 +54,7 @@ public class Sql2oUserRepository implements UserRepository {
         try (Connection connection = sql2o.open()) {
             var query = connection.createQuery("SELECT * FROM users WHERE email = :email")
                     .addParameter("email", email);
-            User user = query.executeAndFetchFirst(User.class);
+            User user = query.setColumnMappings(User.COLUMN_MAPPING).executeAndFetchFirst(User.class);
             return Optional.ofNullable(user);
         }
     }
@@ -74,7 +73,7 @@ public class Sql2oUserRepository implements UserRepository {
     public Collection<User> findAll() {
         try (Connection connection = sql2o.open()) {
             var query = connection.createQuery("SELECT * FROM users");
-            return query.executeAndFetch(User.class);
+            return query.setColumnMappings(User.COLUMN_MAPPING).executeAndFetch(User.class);
         }
     }
 }

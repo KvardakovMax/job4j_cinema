@@ -21,14 +21,13 @@
                     <a class="nav-item nav-link active" href="/">Главная</a>
                     <a class="nav-item nav-link" th:href="@{/filmes}">Фильмы</a>
                     <a class="nav-item nav-link" th:href="@{/schedules}">Расписание</a>
-                    <a class="nav-item nav-link" th:href="@{/filmes/buy}">Купить билет</a>
                 </div>
-                <div class="d-flex" th:if="${user.name == 'Guest'}">
+                <div class="d-flex" th:if="${user.fullName == 'Guest'}">
                     <a class="nav-link text-secondary me-3" th:href="@{/users/register}">Регистрация</a>
                     <a class="nav-link text-secondary" th:href="@{/users/login}">Войти</a>
                 </div>
-                <div class="d-flex" th:if="${user.name != 'Guest'}">
-                    <a class="nav-link text-secondary me-3" href="#" th:text="${user.name}"></a>
+                <div class="d-flex" th:if="${user.fullName != 'Guest'}">
+                    <a class="nav-link text-secondary me-3" href="#" th:text="${user.fullName}"></a>
                     <a class="nav-link text-secondary" th:href="@{/users/logout}">Выйти</a>
                 </div>
             </div>

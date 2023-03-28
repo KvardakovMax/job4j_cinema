@@ -1,8 +1,16 @@
 package com.cinema.model;
 
+import java.util.Map;
 import java.util.Objects;
 
 public class User {
+
+    public static final Map<String, String> COLUMN_MAPPING = Map.of(
+            "id", "id",
+            "full_name", "fullName",
+            "email", "email",
+            "password", "password"
+    );
 
     private int id;
 
@@ -10,9 +18,9 @@ public class User {
 
     private String email;
 
-    private int password;
+    private String password;
 
-    public User(int id, String fullName, String email, int password) {
+    public User(int id, String fullName, String email, String password) {
         this.id = id;
         this.fullName = fullName;
         this.email = email;
@@ -46,11 +54,11 @@ public class User {
         this.email = email;
     }
 
-    public int getPassword() {
+    public String getPassword() {
         return password;
     }
 
-    public void setPassword(int password) {
+    public void setPassword(String password) {
         this.password = password;
     }
 
