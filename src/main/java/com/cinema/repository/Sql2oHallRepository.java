@@ -4,6 +4,7 @@ import com.cinema.model.Hall;
 import org.springframework.stereotype.Repository;
 import org.sql2o.Connection;
 import org.sql2o.Sql2o;
+import org.sql2o.Sql2oException;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -18,7 +19,7 @@ public class Sql2oHallRepository implements HallRepository {
     }
 
     @Override
-    public Hall save(Hall hall) {
+    public Optional<Hall> save(Hall hall) {
         try (Connection connection = sql2o.open()) {
             var query = connection.createQuery("INSERT INTO halls(name, row_count, place_count, description)"
                             + "VALUES (:name, :rowCount, :placeCount, :description)")
@@ -28,7 +29,10 @@ public class Sql2oHallRepository implements HallRepository {
                     .addParameter("description", hall.getDescription());
             int generatedId = query.executeUpdate().getKey(Integer.class);
             hall.setId(generatedId);
-            return hall;
+            return Optional.ofNullable(hall);
+        } catch (Sql2oException e) {
+            e.getMessage();
+            return Optional.empty();
         }
     }
 

@@ -14,22 +14,20 @@ import java.util.Properties;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class Sql2oTicketRepositoryTest {
+class Sql2oFilmSessionRepositoryTest {
 
-    static Sql2oTicketRepository sql2oTicketRepository;
-    static Sql2oFilmSessionRepository sql2oFilmSessionRepository;
-    static Sql2oUserRepository sql2oUserRepository;
-    static Sql2oFilmRepository sql2oFilmRepository;
-    static Sql2oHallRepository sql2oHallRepository;
     static Sql2oFileRepository sql2oFileRepository;
+    static Sql2oFilmSessionRepository sql2oFilmSessionRepository;
+    static Sql2oHallRepository sql2oHallRepository;
+    static Sql2oFilmRepository sql2oFilmRepository;
     static Sql2oGenreRepository sql2oGenreRepository;
-    private static User user;
-    private static FilmSession filmSession;
+    static Film film;
+    static Hall hall;
 
     @BeforeAll
     public static void initRepositories() throws IOException {
         var properties = new Properties();
-        try (var inputStream = Sql2oTicketRepository.class.getClassLoader().
+        try (var inputStream = Sql2oFilmSessionRepository.class.getClassLoader().
                 getResourceAsStream("connection.properties")) {
             properties.load(inputStream);
         }
@@ -41,25 +39,17 @@ class Sql2oTicketRepositoryTest {
         var datasource = configuration.connectionPool(url, username, password);
         var sql2o = configuration.databaseClient(datasource);
 
-        sql2oTicketRepository = new Sql2oTicketRepository(sql2o);
         sql2oFileRepository = new Sql2oFileRepository(sql2o);
         sql2oFilmRepository = new Sql2oFilmRepository(sql2o);
         sql2oFilmSessionRepository = new Sql2oFilmSessionRepository(sql2o);
         sql2oGenreRepository = new Sql2oGenreRepository(sql2o);
         sql2oHallRepository = new Sql2oHallRepository(sql2o);
-        sql2oUserRepository = new Sql2oUserRepository(sql2o);
 
         try {
             var file = sql2oFileRepository.save(new File("test", "test"));
             var genre = sql2oGenreRepository.save(new Genre("fantasy"));
-            var film = sql2oFilmRepository.save(new Film("test", "test", 15, genre.getId(), 15, 15, file.getId()));
-            var hall = sql2oHallRepository.save(new Hall("test hall", 1, 4, "test"));
-
-            filmSession = sql2oFilmSessionRepository.save(new FilmSession(film.getId(), hall.get().getId(),
-                    LocalDateTime.of(2023, 4, 2, 2, 10),
-                    LocalDateTime.of(2023, 4, 2, 3, 10),
-                    100));
-            user = sql2oUserRepository.save(new User(0, "testName", "testEmail", "testPassword")).get();
+            film = sql2oFilmRepository.save(new Film("test", "test", 15, genre.getId(), 15, 15, file.getId()));
+            hall = sql2oHallRepository.save(new Hall("test hall", 1, 4, "test")).get();
         } catch (Sql2oException e) {
             e.getMessage();
             clearRepositories();
@@ -68,15 +58,6 @@ class Sql2oTicketRepositoryTest {
 
     @AfterAll
     public static void clearRepositories() {
-        var users = sql2oUserRepository.findAll();
-        for (User user : users) {
-            sql2oUserRepository.deleteById(user.getId());
-        }
-
-        var sessions = sql2oFilmSessionRepository.findAll();
-        for (FilmSession session : sessions) {
-            sql2oFilmSessionRepository.deleteById(session.getId());
-        }
 
         var halls = sql2oHallRepository.findAll();
         for (Hall hall : halls) {
@@ -100,38 +81,21 @@ class Sql2oTicketRepositoryTest {
     }
 
     @AfterEach
-    public void cleanTickets() {
-        var tickets = sql2oTicketRepository.findAll();
-        for (Ticket ticket : tickets) {
-            sql2oTicketRepository.deleteById(ticket.getId());
+    public void clearFilmSessions() {
+        var sessions = sql2oFilmSessionRepository.findAll();
+        for (FilmSession session : sessions) {
+            sql2oFilmSessionRepository.deleteById(session.getId());
         }
     }
 
     @Test
-    public void whenSaveThenGetSame() {
-        var ticket = sql2oTicketRepository.save(new Ticket(filmSession.getId(), 1, 4, user.getId())).get();
-        var savedTicket = sql2oTicketRepository.findById(ticket.getId()).get();
-        assertThat(ticket.getId()).isEqualTo(savedTicket.getId());
-    }
-
-    @Test
-    public void whenSaveTheSameThenGetOptionalEmpty() {
-        var ticket = sql2oTicketRepository.save(new Ticket(filmSession.getId(), 1, 4, user.getId())).get();
-        var sameTicket = sql2oTicketRepository.save(ticket);
-        assertThat(sameTicket).isEmpty();
-    }
-
-    @Test
     public void whenSaveThenDeleteGetTrue() {
-        var ticket = sql2oTicketRepository.save(new Ticket(filmSession.getId(), 1, 4, user.getId())).get();
-        var deleted = sql2oTicketRepository.deleteById(ticket.getId());
+        var filmSession = sql2oFilmSessionRepository.save(new FilmSession(film.getId(), hall.getId(),
+                LocalDateTime.of(2023, 4, 2, 2, 10),
+                LocalDateTime.of(2023, 4, 2, 3, 10), 100));
+        assertThat(filmSession).isNotNull();
+        var deleted = sql2oFilmSessionRepository.deleteById(filmSession.getId());
         assertThat(deleted).isTrue();
-    }
-
-    @Test
-    public void whenDeletedNonExistedTicketGetFalse() {
-        var deleted = sql2oTicketRepository.deleteById(0);
-        assertThat(deleted).isFalse();
     }
 
 }
