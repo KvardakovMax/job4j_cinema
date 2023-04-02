@@ -1,8 +1,17 @@
 package com.cinema.model;
 
+import java.util.Map;
 import java.util.Objects;
 
 public class Hall {
+
+    public static final Map<String, String> COLUMN_MAPPING = Map.of(
+            "id", "id",
+            "name", "name",
+            "row_count", "rowCount",
+            "place_count", "placeCount",
+            "description", "description"
+    );
 
     private int id;
 
@@ -14,8 +23,7 @@ public class Hall {
 
     private String description;
 
-    public Hall(int id, String name, int rowCount, int placeCount, String description) {
-        this.id = id;
+    public Hall(String name, int rowCount, int placeCount, String description) {
         this.name = name;
         this.rowCount = rowCount;
         this.placeCount = placeCount;

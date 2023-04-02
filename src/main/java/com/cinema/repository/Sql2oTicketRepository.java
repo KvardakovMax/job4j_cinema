@@ -6,6 +6,7 @@ import org.sql2o.Connection;
 import org.sql2o.Sql2o;
 import org.sql2o.Sql2oException;
 
+import java.util.Collection;
 import java.util.Optional;
 
 @Repository
@@ -21,11 +22,10 @@ public class Sql2oTicketRepository implements TicketRepository {
     public Optional<Ticket> save(Ticket ticket) {
         try (Connection connection = sql2o.open()) {
             String sql = """
-                    INSERT INTO tickets(id, session_id, row_number, place_number, user_id)
-                    VALUES(:id, :sessinId, :rowNumber, :placeNumber, :userId)
+                    INSERT INTO tickets(session_id, row_number, place_number, user_id)
+                    VALUES(:sessionId, :rowNumber, :placeNumber, :userId)
                     """;
             var query = connection.createQuery(sql, true)
-                    .addParameter("id", ticket.getId())
                     .addParameter("sessionId", ticket.getSessionId())
                     .addParameter("rowNumber", ticket.getRowNumber())
                     .addParameter("placeNumber", ticket.getPlaceNumber())
@@ -44,8 +44,16 @@ public class Sql2oTicketRepository implements TicketRepository {
         try (Connection connection = sql2o.open()) {
             var query = connection.createQuery("SELECT * FROM tickets WHERE id = :id")
                     .addParameter("id", id);
-            Ticket ticket = query.executeAndFetchFirst(Ticket.class);
+            Ticket ticket = query.setColumnMappings(Ticket.COLUMN_MAPPING).executeAndFetchFirst(Ticket.class);
             return Optional.ofNullable(ticket);
+        }
+    }
+
+    @Override
+    public Collection<Ticket> findAll() {
+        try (Connection connection = sql2o.open()) {
+            var query = connection.createQuery("SELECT * FROM tickets");
+            return query.setColumnMappings(Ticket.COLUMN_MAPPING).executeAndFetch(Ticket.class);
         }
     }
 

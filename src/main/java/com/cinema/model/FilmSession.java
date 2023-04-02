@@ -1,9 +1,19 @@
 package com.cinema.model;
 
-import java.util.Date;
+import java.time.LocalDateTime;
+import java.util.Map;
 import java.util.Objects;
 
 public class FilmSession {
+
+    public static final Map<String, String> COLUMN_MAPPING = Map.of(
+            "id", "id",
+            "film_id", "filmId",
+            "halls_id", "hallsId",
+            "start_time", "startTime",
+            "end_time", "endTime",
+            "price", "price"
+    );
 
     private int id;
 
@@ -11,14 +21,13 @@ public class FilmSession {
 
     private int hallsId;
 
-    private Date startTime;
+    private LocalDateTime startTime;
 
-    private Date endTime;
+    private LocalDateTime endTime;
 
     private int price;
 
-    public FilmSession(int id, int filmId, int hallsId, Date startTime, Date endTime, int price) {
-        this.id = id;
+    public FilmSession(int filmId, int hallsId, LocalDateTime startTime, LocalDateTime endTime, int price) {
         this.filmId = filmId;
         this.hallsId = hallsId;
         this.startTime = startTime;
@@ -53,19 +62,19 @@ public class FilmSession {
         this.hallsId = hallsId;
     }
 
-    public Date getStartTime() {
+    public LocalDateTime getStartTime() {
         return startTime;
     }
 
-    public void setStartTime(Date startTime) {
+    public void setStartTime(LocalDateTime startTime) {
         this.startTime = startTime;
     }
 
-    public Date getEndTime() {
+    public LocalDateTime getEndTime() {
         return endTime;
     }
 
-    public void setEndTime(Date endTime) {
+    public void setEndTime(LocalDateTime endTime) {
         this.endTime = endTime;
     }
 

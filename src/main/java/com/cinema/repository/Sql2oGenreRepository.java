@@ -5,6 +5,7 @@ import org.springframework.stereotype.Repository;
 import org.sql2o.Connection;
 import org.sql2o.Sql2o;
 
+import java.util.Collection;
 import java.util.Optional;
 
 @Repository
@@ -35,6 +36,24 @@ public class Sql2oGenreRepository implements GenreRepository {
                     .addParameter("id", id);
             Genre genre = query.executeAndFetchFirst(Genre.class);
             return Optional.ofNullable(genre);
+        }
+    }
+
+    @Override
+    public Collection<Genre> findAll() {
+        try (Connection connection = sql2o.open()) {
+            var query = connection.createQuery("SELECT * FROM genres");
+            return query.executeAndFetch(Genre.class);
+        }
+    }
+
+    @Override
+    public boolean deleteById(int id) {
+        try (Connection connection = sql2o.open()) {
+            var query = connection.createQuery("DELETE FROM genres WHERE id = :id")
+                    .addParameter("id", id);
+            int affectedRow = query.executeUpdate().getResult();
+            return affectedRow > 0;
         }
     }
 }

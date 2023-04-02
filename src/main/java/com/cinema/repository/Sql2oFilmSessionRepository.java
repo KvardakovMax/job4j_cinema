@@ -5,6 +5,7 @@ import org.springframework.stereotype.Repository;
 import org.sql2o.Connection;
 import org.sql2o.Sql2o;
 
+import java.util.Collection;
 import java.util.Optional;
 
 @Repository
@@ -20,11 +21,10 @@ public class Sql2oFilmSessionRepository implements FilmSessionRepository {
     public FilmSession save(FilmSession filmSession) {
         try (Connection connection = sql2o.open()) {
             String sql = """
-                    INSERT INTO film_sessions(id, film_id, halls_id, start_time, end_time, price)
-                    VALUES(:id, filmId, :hallsId, :startTime, :endTime, :price)
+                    INSERT INTO film_sessions(film_id, halls_id, start_time, end_time, price)
+                    VALUES(:filmId, :hallsId, :startTime, :endTime, :price)
                     """;
             var query = connection.createQuery(sql, true)
-                    .addParameter("id", filmSession.getId())
                     .addParameter("filmId", filmSession.getFilmId())
                     .addParameter("hallsId", filmSession.getHallsId())
                     .addParameter("startTime", filmSession.getStartTime())
@@ -41,8 +41,16 @@ public class Sql2oFilmSessionRepository implements FilmSessionRepository {
         try (Connection connection = sql2o.open()) {
             var query = connection.createQuery("SELECT * FROM film_sessions WHERE id = :id")
                     .addParameter("id", id);
-            FilmSession filmSession = query.executeAndFetchFirst(FilmSession.class);
+            FilmSession filmSession = query.setColumnMappings(FilmSession.COLUMN_MAPPING).executeAndFetchFirst(FilmSession.class);
             return Optional.ofNullable(filmSession);
+        }
+    }
+
+    @Override
+    public Collection<FilmSession> findAll() {
+        try (Connection connection = sql2o.open()) {
+            var query = connection.createQuery("SELECT * FROM film_sessions");
+            return query.setColumnMappings(FilmSession.COLUMN_MAPPING).executeAndFetch(FilmSession.class);
         }
     }
 

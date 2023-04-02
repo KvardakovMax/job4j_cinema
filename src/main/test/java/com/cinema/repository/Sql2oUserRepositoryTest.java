@@ -10,7 +10,6 @@ import org.junit.jupiter.api.Test;
 import java.io.IOException;
 import java.util.Properties;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class Sql2oUserRepositoryTest {
@@ -19,7 +18,8 @@ class Sql2oUserRepositoryTest {
     @BeforeAll
     public static void initRepositories() throws IOException {
         var properties = new Properties();
-        try (var inputStream = Sql2oUserRepository.class.getClassLoader().getResourceAsStream("connection.properties")) {
+        try (var inputStream = Sql2oUserRepository.class.getClassLoader().
+                getResourceAsStream("connection.properties")) {
             properties.load(inputStream);
         }
         var url = properties.getProperty("datasource.url");
@@ -46,6 +46,25 @@ class Sql2oUserRepositoryTest {
         var user = sql2oUserRepository.save(new User(0, "name@gmail.com", "Max", "qwerty")).get();
         var savedUser = sql2oUserRepository.findByEmail(user.getEmail());
         AssertionsForClassTypes.assertThat(user).usingRecursiveComparison().isEqualTo(savedUser.get());
+    }
+
+    @Test
+    public void whenSaveThenDeleteReturnEmptyOptional() {
+        var user = sql2oUserRepository.save(new User(0, "name@gmail.com", "Max", "qwerty"));
+        assertThat(sql2oUserRepository.deleteById(user.get().getId())).isTrue();
+        assertThat(sql2oUserRepository.findByEmail(user.get().getEmail()).isEmpty()).isTrue();
+    }
+
+    @Test
+    public void whenInvalidDeleteThenFalse() {
+        assertThat(sql2oUserRepository.deleteById(0)).isFalse();
+    }
+
+    @Test
+    public void whenSaveAlreadyExistUserThenGetEmptyOptional() {
+        User user = sql2oUserRepository.save(new User(0, "name@gmail.com", "Max", "qwerty")).get();
+        var optionalUser = sql2oUserRepository.save(user);
+        assertThat(optionalUser).isEmpty();
     }
 
 }

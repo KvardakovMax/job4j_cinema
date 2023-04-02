@@ -1,8 +1,20 @@
 package com.cinema.model;
 
+import java.util.Map;
 import java.util.Objects;
 
 public class Film {
+
+    public static final Map<String, String> COLUMN_MAPPING = Map.of(
+            "id", "id",
+            "name", "name",
+            "description", "description",
+            "year", "year",
+            "genre_id", "genreId",
+            "minimal_age", "minimalAge",
+            "duration_in_minutes", "durationInMinutes",
+            "file_id", "fileId"
+    );
 
     private int id;
 
@@ -20,8 +32,7 @@ public class Film {
 
     private int fileId;
 
-    public Film(int id, String name, String description, int year, int genreId, int minimalAge, int durationInMinutes, int fileId) {
-        this.id = id;
+    public Film(String name, String description, int year, int genreId, int minimalAge, int durationInMinutes, int fileId) {
         this.name = name;
         this.description = description;
         this.year = year;

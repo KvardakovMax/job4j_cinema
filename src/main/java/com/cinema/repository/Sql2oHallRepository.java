@@ -5,6 +5,7 @@ import org.springframework.stereotype.Repository;
 import org.sql2o.Connection;
 import org.sql2o.Sql2o;
 
+import java.util.Collection;
 import java.util.Optional;
 
 @Repository
@@ -19,9 +20,8 @@ public class Sql2oHallRepository implements HallRepository {
     @Override
     public Hall save(Hall hall) {
         try (Connection connection = sql2o.open()) {
-            var query = connection.createQuery("INSERT INTO halls(id, name, row_count, place_count, description)"
-                            + "VALUES (:id, :name, :rowCount, :description)")
-                    .addParameter("id", hall.getId())
+            var query = connection.createQuery("INSERT INTO halls(name, row_count, place_count, description)"
+                            + "VALUES (:name, :rowCount, :placeCount, :description)")
                     .addParameter("name", hall.getName())
                     .addParameter("rowCount", hall.getRowCount())
                     .addParameter("placeCount", hall.getPlaceCount())
@@ -37,8 +37,26 @@ public class Sql2oHallRepository implements HallRepository {
         try (Connection connection = sql2o.open()) {
             var query = connection.createQuery("SELECT * FROM halls WHERE id = :id")
                     .addParameter("id", id);
-            Hall hall = query.executeAndFetchFirst(Hall.class);
+            Hall hall = query.setColumnMappings(Hall.COLUMN_MAPPING).executeAndFetchFirst(Hall.class);
             return Optional.ofNullable(hall);
+        }
+    }
+
+    @Override
+    public Collection<Hall> findAll() {
+        try (Connection connection = sql2o.open()) {
+            var query = connection.createQuery("SELECT * FROM halls");
+            return query.setColumnMappings(Hall.COLUMN_MAPPING).executeAndFetch(Hall.class);
+        }
+    }
+
+    @Override
+    public boolean deleteById(int id) {
+        try (Connection connection = sql2o.open()) {
+            var query = connection.createQuery("DELETE FROM halls WHERE id = :id")
+                    .addParameter("id", id);
+            int affectedRow = query.executeUpdate().getResult();
+            return affectedRow > 0;
         }
     }
 }

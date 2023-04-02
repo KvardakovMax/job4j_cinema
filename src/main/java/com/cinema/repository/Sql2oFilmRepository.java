@@ -21,11 +21,10 @@ public class Sql2oFilmRepository implements FilmRepository {
     public Film save(Film film) {
         try (Connection connection = sql2o.open()) {
             String sql = """
-                    INSERT INTO films(id, name, description, year, genre_id, minimal_age, duration_in_minutes, file_id)
-                    VALUES(:id, :name, :description, :year, :genreId, :minimalAge, :durationInMinutes, :fileId)
+                    INSERT INTO films(name, description, year, genre_id, minimal_age, duration_in_minutes, file_id)
+                    VALUES(:name, :description, :year, :genreId, :minimalAge, :durationInMinutes, :fileId)
                     """;
             var query = connection.createQuery(sql, true)
-                    .addParameter("id", film.getId())
                     .addParameter("name", film.getName())
                     .addParameter("description", film.getDescription())
                     .addParameter("year", film.getYear())
@@ -45,7 +44,7 @@ public class Sql2oFilmRepository implements FilmRepository {
         try (Connection connection = sql2o.open()) {
             var query = connection.createQuery("SELECT * FROM films WHERE id = :id")
                     .addParameter("id", id);
-            Film film = query.executeAndFetchFirst(Film.class);
+            Film film = query.setColumnMappings(Film.COLUMN_MAPPING).executeAndFetchFirst(Film.class);
             return Optional.ofNullable(film);
         }
     }
@@ -64,7 +63,7 @@ public class Sql2oFilmRepository implements FilmRepository {
     public Collection<Film> findAll() {
         try (Connection connection = sql2o.open()) {
             var query = connection.createQuery("SELECT * FROM films");
-            return query.executeAndFetch(Film.class);
+            return query.setColumnMappings(Film.COLUMN_MAPPING).executeAndFetch(Film.class);
         }
     }
 }

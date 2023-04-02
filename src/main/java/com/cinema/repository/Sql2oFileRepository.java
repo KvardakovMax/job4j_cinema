@@ -5,6 +5,7 @@ import org.springframework.stereotype.Repository;
 import org.sql2o.Connection;
 import org.sql2o.Sql2o;
 
+import java.util.Collection;
 import java.util.Optional;
 
 @Repository
@@ -20,11 +21,10 @@ public class Sql2oFileRepository implements FileRepository {
     public File save(File file) {
         try (Connection connection = sql2o.open()) {
             String sql = """
-                    INSERT INTO files(id, name, path)
-                    VALUES(:id, :name, :path)
+                    INSERT INTO files(name, path)
+                    VALUES(:name, :path)
                     """;
             var query = connection.createQuery(sql, true)
-                    .addParameter("id", file.getId())
                     .addParameter("name", file.getName())
                     .addParameter("path", file.getPath());
             int generatedId = query.executeUpdate().getKey(Integer.class);
@@ -40,6 +40,14 @@ public class Sql2oFileRepository implements FileRepository {
                     .addParameter("id", id);
             File file = query.executeAndFetchFirst(File.class);
             return Optional.ofNullable(file);
+        }
+    }
+
+    @Override
+    public Collection<File> findAll() {
+        try (Connection connection = sql2o.open()) {
+            var query = connection.createQuery("SELECT * FROM files");
+            return query.executeAndFetch(File.class);
         }
     }
 
