@@ -4,6 +4,7 @@ import com.cinema.model.Film;
 import org.springframework.stereotype.Repository;
 import org.sql2o.Connection;
 import org.sql2o.Sql2o;
+import org.sql2o.Sql2oException;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -18,7 +19,7 @@ public class Sql2oFilmRepository implements FilmRepository {
     }
 
     @Override
-    public Film save(Film film) {
+    public Optional<Film> save(Film film) {
         try (Connection connection = sql2o.open()) {
             String sql = """
                     INSERT INTO films(name, description, year, genre_id, minimal_age, duration_in_minutes, file_id)
@@ -34,7 +35,10 @@ public class Sql2oFilmRepository implements FilmRepository {
                     .addParameter("fileId", film.getFileId());
             int generatedId = query.executeUpdate().getKey(Integer.class);
             film.setId(generatedId);
-            return film;
+            return Optional.ofNullable(film);
+        } catch (Sql2oException e) {
+            e.getMessage();
+            return Optional.empty();
         }
 
     }

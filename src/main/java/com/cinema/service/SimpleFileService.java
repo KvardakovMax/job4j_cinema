@@ -16,7 +16,7 @@ public class SimpleFileService implements FileService {
     }
 
     @Override
-    public File save(File file) {
+    public Optional<File> save(File file) {
         return fileRepository.save(file);
     }
 

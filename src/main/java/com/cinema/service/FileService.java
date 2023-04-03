@@ -6,7 +6,7 @@ import java.util.Optional;
 
 public interface FileService {
 
-    File save(File file);
+    Optional<File> save(File file);
 
     Optional<File> findById(int id);
 

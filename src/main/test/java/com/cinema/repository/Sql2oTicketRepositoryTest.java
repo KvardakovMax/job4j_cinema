@@ -52,7 +52,7 @@ class Sql2oTicketRepositoryTest {
         try {
             var file = sql2oFileRepository.save(new File("test", "test"));
             var genre = sql2oGenreRepository.save(new Genre("fantasy"));
-            var film = sql2oFilmRepository.save(new Film("test", "test", 15, genre.getId(), 15, 15, file.getId()));
+            var film = sql2oFilmRepository.save(new Film("test", "test", 15, genre.getId(), 15, 15, file.get().getId())).get();
             var hall = sql2oHallRepository.save(new Hall("test hall", 1, 4, "test"));
 
             filmSession = sql2oFilmSessionRepository.save(new FilmSession(film.getId(), hall.get().getId(),

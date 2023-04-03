@@ -7,7 +7,7 @@ import java.util.Optional;
 
 public interface FilmRepository {
 
-    Film save(Film film);
+    Optional<Film> save(Film film);
 
     Optional<Film> findById(int id);
 

@@ -31,7 +31,7 @@ public class SimpleFilmService implements FilmService {
     }
 
     @Override
-    public Film save(Film film) {
+    public  Optional<Film> save(Film film) {
         return filmRepository.save(film);
     }
 

@@ -4,6 +4,7 @@ import com.cinema.model.File;
 import org.springframework.stereotype.Repository;
 import org.sql2o.Connection;
 import org.sql2o.Sql2o;
+import org.sql2o.Sql2oException;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -18,7 +19,7 @@ public class Sql2oFileRepository implements FileRepository {
     }
 
     @Override
-    public File save(File file) {
+    public Optional<File> save(File file) {
         try (Connection connection = sql2o.open()) {
             String sql = """
                     INSERT INTO files(name, path)
@@ -29,7 +30,10 @@ public class Sql2oFileRepository implements FileRepository {
                     .addParameter("path", file.getPath());
             int generatedId = query.executeUpdate().getKey(Integer.class);
             file.setId(generatedId);
-            return file;
+            return Optional.ofNullable(file);
+        } catch (Sql2oException e) {
+            e.getMessage();
+            return Optional.empty();
         }
     }
 

@@ -8,7 +8,7 @@ import java.util.Optional;
 
 public interface FilmService {
 
-    Film save(Film film);
+    Optional<Film> save(Film film);
 
     Optional<Film> findById(int id);
 
