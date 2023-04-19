@@ -59,7 +59,7 @@ class Sql2oTicketRepositoryTest {
                     LocalDateTime.of(2023, 4, 2, 2, 10),
                     LocalDateTime.of(2023, 4, 2, 3, 10),
                     100));
-            user = sql2oUserRepository.save(new User(0, "testName", "testEmail", "testPassword")).get();
+            user = sql2oUserRepository.save(new User("testName", "testEmail", "testPassword")).get();
         } catch (Sql2oException e) {
             e.getMessage();
             clearRepositories();

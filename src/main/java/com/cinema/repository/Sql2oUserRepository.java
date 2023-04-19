@@ -1,6 +1,8 @@
 package com.cinema.repository;
 
 import com.cinema.model.User;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 import org.sql2o.Connection;
 import org.sql2o.Sql2o;
@@ -11,6 +13,7 @@ import java.util.Optional;
 
 @Repository
 public class Sql2oUserRepository implements UserRepository {
+    private static final Logger LOGGER = LoggerFactory.getLogger(Sql2oUserRepository.class);
 
     private final Sql2o sql2o;
 
@@ -30,11 +33,12 @@ public class Sql2oUserRepository implements UserRepository {
                     .addParameter("fullName", user.getFullName())
                     .addParameter("email", user.getEmail())
                     .addParameter("password", user.getPassword());
-            int generatedId = query.executeUpdate().getKey(Integer.class);
+            LOGGER.info("Name of the new user - {}", user.getFullName());
+            int generatedId = query.setColumnMappings(User.COLUMN_MAPPING).executeUpdate().getKey(Integer.class);
             user.setId(generatedId);
             return Optional.ofNullable(user);
         } catch (Sql2oException e) {
-            e.getMessage();
+            LOGGER.error("UserRepo - {}", e.getMessage());
             return Optional.empty();
         }
     }

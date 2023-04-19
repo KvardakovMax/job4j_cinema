@@ -43,14 +43,14 @@ class Sql2oUserRepositoryTest {
 
     @Test
     public void whenSaveThenGetSame() {
-        var user = sql2oUserRepository.save(new User(0, "name@gmail.com", "Max", "qwerty")).get();
+        var user = sql2oUserRepository.save(new User("name@gmail.com", "Max", "qwerty")).get();
         var savedUser = sql2oUserRepository.findByEmail(user.getEmail());
         AssertionsForClassTypes.assertThat(user).usingRecursiveComparison().isEqualTo(savedUser.get());
     }
 
     @Test
     public void whenSaveThenDeleteReturnEmptyOptional() {
-        var user = sql2oUserRepository.save(new User(0, "name@gmail.com", "Max", "qwerty"));
+        var user = sql2oUserRepository.save(new User("name@gmail.com", "Max", "qwerty"));
         assertThat(sql2oUserRepository.deleteById(user.get().getId())).isTrue();
         assertThat(sql2oUserRepository.findByEmail(user.get().getEmail()).isEmpty()).isTrue();
     }
@@ -62,7 +62,7 @@ class Sql2oUserRepositoryTest {
 
     @Test
     public void whenSaveAlreadyExistUserThenGetEmptyOptional() {
-        User user = sql2oUserRepository.save(new User(0, "name@gmail.com", "Max", "qwerty")).get();
+        User user = sql2oUserRepository.save(new User("name@gmail.com", "Max", "qwerty")).get();
         var optionalUser = sql2oUserRepository.save(user);
         assertThat(optionalUser).isEmpty();
     }

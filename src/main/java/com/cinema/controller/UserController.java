@@ -29,13 +29,15 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public String register(Model model, @ModelAttribute User user) {
+    public String register(Model model, @ModelAttribute User user, HttpServletRequest request) {
         Optional<User> userOptional = userService.save(user);
         if (userOptional.isEmpty()) {
             model.addAttribute("error", "This user already exist");
             return "users/register";
         }
-        return "redirect:/";
+        HttpSession session = request.getSession();
+        session.setAttribute("user", user);
+        return "redirect:/index";
     }
 
     @GetMapping("/login")
@@ -52,7 +54,7 @@ public class UserController {
         }
         HttpSession session = request.getSession();
         session.setAttribute("user", userOptional.get());
-        return "redirect:/";
+        return "redirect:/index";
     }
 
     @GetMapping("/logout")
